@@ -101,7 +101,7 @@ echo " [sysrc] : "
 /usr/sbin/sysrc sendmail_submit_enable="NO"
 /usr/sbin/sysrc sendmail_outbound_enable="NO"
 /usr/sbin/sysrc sendmail_msp_queue_enable="NO"
-/usr/sbin/sysrc cloudinit_enable="YES"
+/usr/sbin/sysrc cloudinit_enable="${CLOUD_INIT_ENABLE}"
 
 cp config/rc.conf.local /etc/rc.conf.local
 cp config/rc.conf.network /etc/rc.conf.d/network

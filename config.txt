@@ -4,7 +4,7 @@ BRANCH="current"
 VERSION="13-stable"
 ARCH=`/usr/bin/uname -m`
 TARGET_ARCH=${ARCH}
-REPO=""
+CLOUD_INIT_ENABLE="NO"
 
 VM_EXTRA_PACKAGES="ca_root_nss wget libucl secadm secadm-kmod sudo emulators/open-vm-tools@nox11 devel/py-virtualenv net/cloud-init"
 VM_VULTURE_PACKAGES="vulture-base vulture-rsyslog vulture-redis vulture-mongodb vulture-haproxy vulture-gui darwin"
