@@ -1,0 +1,6 @@
+fsck_y_enable="YES"
+clear_tmp_enable="YES"
+gateway_enable="YES"
+ipv6_gateway_enable="YES"
+dumpdev="NO"
+sendmail_enable="NONE"

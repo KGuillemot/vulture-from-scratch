@@ -1,0 +1,51 @@
+# Jails subsystem
+/.jail_system /zroot/haproxy/.jail_system nullfs   ro,late      0       0
+/.jail_system /zroot/mongodb/.jail_system nullfs   ro,late      0       0
+/.jail_system /zroot/redis/.jail_system nullfs   ro,late      0       0
+/.jail_system /zroot/portal/.jail_system nullfs   ro,late      0       0
+/.jail_system /zroot/apache/.jail_system nullfs   ro,late      0       0
+/.jail_system /zroot/rsyslog/.jail_system nullfs   ro,late      0       0
+
+# Python env
+/home/jails.apache/.zfs-source/home/vlt-os /zroot/apache/home/vlt-os nullfs   ro,late      0       0
+/home/jails.apache/.zfs-source/home/vlt-os /zroot/portal/home/vlt-os nullfs   ro,late      0       0
+
+# PKI
+/var/db/pki /zroot/haproxy/var/db/pki nullfs   ro,late      0       0
+/var/db/pki /zroot/mongodb/var/db/pki nullfs   ro,late      0       0
+/var/db/pki /zroot/apache/var/db/pki nullfs   ro,late      0       0
+/var/db/pki /zroot/portal/var/db/pki nullfs   ro,late      0       0
+/var/db/pki /zroot/rsyslog/var/db/pki nullfs   ro,late      0       0
+
+# Configuration sharing 
+/usr/local/etc/haproxy.d /zroot/haproxy/usr/local/etc/haproxy.d nullfs   ro,late      0       0
+/usr/local/etc/redis /zroot/redis/usr/local/etc/redis nullfs   rw,late      0       0
+/usr/local/etc/haproxy.d /zroot/apache/usr/local/etc/haproxy.d nullfs   ro,late      0       0
+/usr/local/etc/rsyslog.d /zroot/rsyslog/usr/local/etc/rsyslog.d nullfs   ro,late      0       0
+/zroot/apache/home/vlt-os/vulture_os/services/rsyslogd/config /zroot/rsyslog/home/vlt-os/vulture_os/services/rsyslogd/config nullfs   ro,late      0       0
+/home/darwin/conf /zroot/apache/home/darwin/conf nullfs   ro,late      0       0
+
+# Sockets - RO
+/var/sockets/daemon /zroot/apache/var/sockets/daemon nullfs   ro,late      0       0
+/var/sockets/darwin /zroot/haproxy/var/sockets/darwin nullfs   ro,late      0       0
+/var/sockets/darwin /zroot/rsyslog/var/sockets/darwin nullfs   ro,late      0       0
+/var/sockets/redis /zroot/apache/var/sockets/redis nullfs   ro,late      0       0
+/var/sockets/redis /zroot/portal/var/sockets/redis nullfs   ro,late      0       0
+/var/sockets/rsyslog /zroot/haproxy/var/sockets/rsyslog nullfs   ro,late      0       0
+
+# Sockets - RW
+/var/sockets/haproxy /zroot/haproxy/var/sockets/haproxy nullfs   rw,late      0       0
+/var/sockets/redis /zroot/redis/var/sockets/redis nullfs   rw,late      0       0
+/var/sockets/mongodb /zroot/mongodb/var/sockets/mongodb nullfs   rw,late      0       0
+/var/sockets/rsyslog /zroot/rsyslog/var/sockets/rsyslog nullfs   rw,late      0       0
+/var/sockets/gui /zroot/apache/var/sockets/gui nullfs   rw,late      0       0
+
+# Log files
+/var/log/pf /zroot/rsyslog/var/log/pf nullfs   ro,late      0       0
+/var/log/api_parser /zroot/rsyslog/var/log/api_parser nullfs   ro,late      0       0
+/var/log/darwin /zroot/rsyslog/var/log/darwin nullfs   ro,late      0       0
+
+# Databases
+/var/db/darwin /zroot/rsyslog/var/db/darwin nullfs   ro,late      0       0
+/var/db/reputation_ctx /zroot/rsyslog/var/db/reputation_ctx nullfs   ro,late      0       0
+
