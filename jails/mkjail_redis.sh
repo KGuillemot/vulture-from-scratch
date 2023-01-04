@@ -35,5 +35,3 @@ chmod 750 ${TARGET}/var/run/redis/
 /usr/sbin/chown root:redis ${TARGET}/var/log/sentinel.log
 /bin/chmod 660 ${TARGET}/var/log/sentinel.log
 
-#/usr/sbin/jexec ${JAIL} /usr/sbin/service redis start > /dev/null
-#/usr/sbin/jexec ${JAIL} /usr/sbin/service sentinel start > /dev/null

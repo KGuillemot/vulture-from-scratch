@@ -36,16 +36,16 @@ chmod 600 /home/vlt-os/vulture_os/vulture_os/secret_key.py
 chown vlt-os:wheel /var/log/vulture/os/
 chmod 755 /var/log/vulture/os/
 
-jexec ${JAIL} /bin/mkdir -p /var/log/vulture/os/
-jexec ${JAIL} /bin/mkdir -p /var/log/vulture/portal/
-jexec ${JAIL} chown -R vlt-os:vlt-web /var/log/vulture/
-jexec ${JAIL} chmod -R 664 /var/log/vulture/*
-jexec ${JAIL} find /var/log/vulture -type d -exec chmod 775 {} \;
+/usr/sbin/chroot ${TARGET} /bin/mkdir -p /var/log/vulture/os/
+/usr/sbin/chroot ${TARGET} /bin/mkdir -p /var/log/vulture/portal/
+/usr/sbin/chroot ${TARGET} chown -R vlt-os:vlt-web /var/log/vulture/
+/usr/sbin/chroot ${TARGET} chmod -R 664 /var/log/vulture/*
+/usr/sbin/chroot ${TARGET} find /var/log/vulture -type d -exec chmod 775 {} \;
 
 # Test conf HAProxy
-jexec ${JAIL} /bin/mkdir -p /var/tmp/haproxy
-jexec ${JAIL} chown vlt-os:vlt-web /var/tmp/haproxy
-jexec ${JAIL} chmod 755 /var/tmp/haproxy
+/usr/sbin/chroot ${TARGET} /bin/mkdir -p /var/tmp/haproxy
+/usr/sbin/chroot ${TARGET} chown vlt-os:vlt-web /var/tmp/haproxy
+/usr/sbin/chroot ${TARGET} chmod 755 /var/tmp/haproxy
 
 # Redis socket
 /bin/mkdir -p ${TARGET}/var/sockets/redis/
