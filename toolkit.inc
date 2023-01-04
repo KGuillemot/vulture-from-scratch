@@ -12,15 +12,21 @@ make_zpool() {
     zpool=$1
 
     # This will return 1 in case of non-existing zpool
-    zpool status ${zpool} 2> /dev/null || echo "${Red}Error: zpool \"${zpool}\" does not exist !${Color_Off}"
+    zpool status ${zpool} > /dev/null 2> /dev/null || echo -e "${Red}Error: zpool \"${zpool}\" does not exist !${Color_Off}"
 
     for jail in haproxy mongodb redis apache portal rsyslog; do
-        echo -n "${jail} "
+        echo -n " - ${jail} 	: "
+        # Skip if mountpoint is already present
+	if [ -d /zroot/${jail} ]; then
+	    echo -e "${Yellow}Skip - mountpoint exists${Color_Off}"
+	    continue
+	fi
         zfs create -o atime=off -o mountpoint=/zroot/${jail} ${zpool}/${jail}
         zfs create -o atime=off -o compress=on -o mountpoint=/zroot/${jail}/usr ${zpool}/${jail}/usr
         zfs create -o atime=off -o compress=on -o mountpoint=/zroot/${jail}/var ${zpool}/${jail}/var
         zfs create -o atime=off -o compress=off -o mountpoint=/zroot/${jail}/var/db ${zpool}/${jail}/var/db
         zfs create -o atime=off -o compress=off -o mountpoint=/zroot/${jail}/var/log ${zpool}/${jail}/var/log
+	echo -e "${Green}Ok{Color_Off}"
     done
     
     return 0

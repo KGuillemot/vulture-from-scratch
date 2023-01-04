@@ -17,20 +17,24 @@ Red='\033[31m'
 Yellow='\033[;33m'
 White='\033[0;37m'
 
-ZPOOL="${2:-vulture}"
+zpool="${2:-vulture}"
 
 echo "WARNING: You are about to turn this *BSD system into a VultureOS system !"
 echo "Installation will be done with the following configuration:"
-echo -e "${Yellow}- CONFIG = 	${conf} ${Color_Off}"
-echo -e "${Yellow}- ZPOOL = 	${ZPOOL} ${Color_Off}"
+echo -e "${Yellow}- CONFIG = ${conf} ${Color_Off}"
+echo -e "${Yellow}- zpool  = ${zpool} ${Color_Off}"
 echo ""
 echo "Press CTRL+C to abort or ENTER if you want to continue..."
-read
+read a
 
 echo -n "Fetching base system files (please wait)...: "
-/usr/bin/fetch http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/base.txz -o /tmp/base.txz
-/usr/bin/fetch http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/MANIFEST -o /tmp/MANIFEST
-echo -e "${Green}Ok${Color_Off}"
+/usr/bin/fetch http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/MANIFEST -o /tmp/MANIFEST > /dev/null 2> /dev/null
+if [ -f "/tmp/base.txz" ]; then
+	echo -e "${Yellow}Skip (base.txz found in /tmp)${Color_Off}"
+else
+    /usr/bin/fetch http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/base.txz -o /tmp/base.txz > /dev/null 2> /dev/null
+    echo -e "${Green}Ok${Color_Off}"
+fi
 echo -n "Verifying checksums (please wait)...: "
 expected_sha256_base=`/usr/bin/grep base.txz /tmp/MANIFEST | /usr/bin/awk '{print $2}'`
 sha256_base=`/sbin/sha256sum /tmp/base.txz | /usr/bin/awk '{print $1}'`
@@ -40,19 +44,22 @@ if [ "$expected_sha256_base" != "$sha256_base" ]; then
 fi
 echo -e "${Green}Ok${Color_Off}"
 
-echo -n "Building ZFS filesystem: "
-make_zpool ${ZPOOL} 
-echo -e "${Green}Ok${Color_Off}"
+echo "Building ZFS filesystem: "
 
 # Vulture needs to have a /zroot mount point, so be sure it exists
-if [ "$ZPOOL" != "zroot" ]; then
-    /bin/ln -s /${ZPOOL} /zroot
+if [ "${zpool}" != "zroot" ]; then
+    if [ ! -L "/zroot" ] && [ ! -f "/zroot" ]; then 
+        /bin/ln -s /${zpool} /zroot
+    fi
 fi
+make_zpool ${zpool} 
 
 echo -n "Creating vulture directory structure... "
 # Vulture specific directories
-rm -rf /.jail_system/etc/pkg/*
-rm -rf /.jail_system/usr/share/keys/pkg/trusted/*
+if [ -d /.jail_system ]; then
+    chflags -R noschg /.jail_system 
+    rm -rf /.jail_system
+fi
 rm -rf /etc/hbsd-update*.conf
 rm -rf /usr/share/keys/hbsd-update/trusted/*
 mkdir -p /home/darwin/conf /home/jails.apache/.zfs-source/home/vlt-os/vulture_os/services/rsyslogd/config \
@@ -66,18 +73,18 @@ echo -e "${Green}Ok${Color_Off}"
 # Install packages on base system
 echo -n " [hbsd-update setup] : "
 mkdir -p /usr/share/keys/hbsd-update/trusted/
-/usr/bin/fetch http://hbsd.vultureproject.org/ca.vultureproject.org -o /usr/share/keys/hbsd-update/trusted/ca.vultureproject.org
-/usr/bin/fetch http://hbsd.vultureproject.org/hbsd-update-current.conf -o /etc/hbsd-update.conf
+/usr/bin/fetch http://hbsd.vultureproject.org/ca.vultureproject.org -o /usr/share/keys/hbsd-update/trusted/ca.vultureproject.org > /dev/null 2> /dev/null
+/usr/bin/fetch http://hbsd.vultureproject.org/hbsd-update-current.conf -o /etc/hbsd-update.conf > /dev/null 2> /dev/null
 echo -e "${Green}Ok${Color_Off}"
 
 echo -n " [pkg setup] : "
-/usr/bin/fetch http://pkg.vultureproject.org/pkg.vultureproject.org -o /usr/share/keys/pkg/trusted/pkg.vultureproject.org
-rm -rf /etc/pkg/* && fetch http://pkg.vultureproject.org/Vulture.conf -o /etc/pkg/
-env ASSUME_ALWAYS_YES=yes /usr/sbin/pkg bootstrap -y
-rm -rf /etc/pkg/* && /usr/bin/fetch http://pkg.vultureproject.org/Vulture.conf -o /etc/pkg/
+/usr/bin/fetch http://pkg.vultureproject.org/pkg.vultureproject.org -o /usr/share/keys/pkg/trusted/pkg.vultureproject.org > /dev/null 2> /dev/null
+rm -rf /etc/pkg/* && fetch http://pkg.vultureproject.org/Vulture.conf -o /etc/pkg/ > /dev/null 2> /dev/null
+env ASSUME_ALWAYS_YES=yes /usr/sbin/pkg bootstrap -y > /dev/null 2> /dev/null
+rm -rf /etc/pkg/* && /usr/bin/fetch http://pkg.vultureproject.org/Vulture.conf -o /etc/pkg/ > /dev/null 2> /dev/null
 echo -e "${Green}Ok${Color_Off}"
 
-mkdir /.jail_system
+mkdir -p /.jail_system
 echo -n "Decompressing base.txz into jail_system... "
 tar xf /tmp/base.txz -C /.jail_system/
 echo -e "${Green}Ok${Color_Off}"
@@ -198,34 +205,8 @@ for jail in haproxy mongodb redis apache portal rsyslog; do
         /usr/sbin/sysrc -f /zroot/${jail}/etc/rc.conf.d/${file} ${_option} > /dev/null 2> /dev/null
     done
 
-    # Temporarily enable dns resolution to be able to download packages
-    cp /etc/resolv.conf /zroot/${jail}/etc/resolv.conf
+    echo "nameserver ${jail} > /zroot/${jail}/etc/resolv.conf"
     echo -e "${Green}Ok${Color_Off}"
-
-    # Start jail
-    echo -n "    - Creating  "
-    /usr/sbin/jail -cm ${jail}
-
-    # Install packages into jails
-    echo -n "    - Installing packages...  "
-    pkg_list="VM_EXTRA_PACKAGES_"${jail}
-    echo "Installing packages in jail ${jail}" >> /tmp/gen-image.log
-    /usr/bin/env ASSUME_ALWAYS_YES=yes /usr/sbin/pkg -j ${jail} install -y `eval echo \\$$pkg_list`
-    /usr/bin/env ASSUME_ALWAYS_YES=yes /usr/sbin/pkg -j ${jail} clean -y -a
-    echo -e "${Green}Ok${Color_Off}"
-
-    # Configure jail
-    echo -n "    - Vulture setup... "
-    /tmp/mkjail_${jail}.sh
-    echo -e "${Green}Ok${Color_Off}"
-
-    # Remove dns resolution to be able to download packages
-    rm /zroot/${jail}/etc/resolv.conf
-
-    echo -n "    - Cleaning and shutting down..."
-
-    # Stop the jail from the host's system to avoid devfs unmount issue
-    /usr/sbin/jail -r ${jail}
 
     # This need to be done when jail is stopped
     /bin/sh /tmp/configure_jail_hosts.sh ${jail}
@@ -235,29 +216,5 @@ for jail in haproxy mongodb redis apache portal rsyslog; do
 
 done
 
-echo -n "Jails post-configuration... "
-# Create directories for nullfs mountpoints
-cd ${cur}
-for rep in `/bin/cat config/fstab | grep nullfs | sed -E 's/^.* (.*) nullfs.*/\1/'`; do
-    mkdir -p ${rep}
-done
-
-echo -e "${Green}Ok${Color_Off}"
-
-# Routing config
-cat << EOF > /mnt/etc/rc.conf.d/routing
-gateway_enable="YES"
-ipv6_gateway_enable="YES"
-#static_routes="net1 net2"
-#route_net1="-net 192.168.0.0/24 192.168.0.1"
-#route_net2="-net 192.168.1.0/24 192.168.1.1"
-EOF
-
-# Add jails mountpoints to fstab
-cat config/fstab >> /etc/fstab
-
-echo "Syncing disk..."
-sync
-
-echo -e "${Green}Installation complete ! PLEASE REBOOT THE SYSTEM NOW.${Color_Off}"
+echo -e "${Green}PLEASE REBOOT THE SYSTEM NOW, then launch install-2.sh.${Color_Off}"
 
