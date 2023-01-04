@@ -51,27 +51,6 @@ for jail in haproxy mongodb redis apache portal rsyslog; do
 
 done
 
-echo -n "Jails post-configuration... "
-# Create directories for nullfs mountpoints
-cd ${cur}
-for rep in `/bin/cat config/fstab | grep nullfs | sed -E 's/^.* (.*) nullfs.*/\1/'`; do
-    mkdir -p ${rep}
-done
-
-echo -e "${Green}Ok${Color_Off}"
-
-# Routing config
-cat << EOF > /mnt/etc/rc.conf.d/routing
-gateway_enable="YES"
-ipv6_gateway_enable="YES"
-#static_routes="net1 net2"
-#route_net1="-net 192.168.0.0/24 192.168.0.1"
-#route_net2="-net 192.168.1.0/24 192.168.1.1"
-EOF
-
-# Add jails mountpoints to fstab
-cat config/fstab >> /etc/fstab
-
 echo "Syncing disk..."
 sync
 

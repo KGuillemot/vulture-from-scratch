@@ -183,7 +183,7 @@ for jail in haproxy mongodb redis apache portal rsyslog; do
     for i in /etc/passwd /etc/group /etc/master.passwd /etc/login.conf /etc/pam.d; do
         /bin/cp -rf ${i} /zroot/${jail}/etc/
     done
-    chroot /zroot/${jail} ${EMULATOR} /usr/sbin/pwd_mkdb -p /etc/master.passwd
+    chroot /zroot/${jail} /usr/sbin/pwd_mkdb -p /etc/master.passwd
 
     # Set startup config - ALL JAILS
     chroot /zroot/${jail} /usr/sbin/sysrc -f /etc/rc.conf.d/syslogd syslogd_enable="NO"  > /dev/null 2> /dev/null
@@ -205,16 +205,35 @@ for jail in haproxy mongodb redis apache portal rsyslog; do
         /usr/sbin/sysrc -f /zroot/${jail}/etc/rc.conf.d/${file} ${_option} > /dev/null 2> /dev/null
     done
 
-    echo "nameserver ${jail} > /zroot/${jail}/etc/resolv.conf"
+    echo "nameserver ${jail}" > /zroot/${jail}/etc/resolv.conf
     echo -e "${Green}Ok${Color_Off}"
 
     # This need to be done when jail is stopped
     /bin/sh /tmp/configure_jail_hosts.sh ${jail}
     umount /zroot/${jail}/.jail_system
-    umount /zroot/${jail}/dev
     echo -e "${Green}Ok${Color_Off}"
 
 done
+
+echo -n "Jails post-configuration... "
+# Create directories for nullfs mountpoints
+cd ${cur}
+for rep in `/bin/cat config/fstab | grep nullfs | sed -E 's/^.* (.*) nullfs.*/\1/'`; do
+    mkdir -p ${rep}
+done
+echo -e "${Green}Ok${Color_Off}"
+
+# Routing config
+cat << EOF > /etc/rc.conf.d/routing
+gateway_enable="YES"
+ipv6_gateway_enable="YES"
+#static_routes="net1 net2"
+#route_net1="-net 192.168.0.0/24 192.168.0.1"
+#route_net2="-net 192.168.1.0/24 192.168.1.1"
+EOF
+
+# Add jails mountpoints to fstab
+cat config/fstab >> /etc/fstab
 
 echo -e "${Green}PLEASE REBOOT THE SYSTEM NOW, then launch install-2.sh.${Color_Off}"
 
