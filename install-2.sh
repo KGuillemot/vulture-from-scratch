@@ -40,11 +40,6 @@ for jail in haproxy mongodb redis apache portal rsyslog; do
     /usr/bin/env ASSUME_ALWAYS_YES=yes /usr/sbin/pkg -j ${jail} clean -y -a
     echo -e "${Green}Ok${Color_Off}"
 
-    # Configure jail
-    echo -n "    - Vulture setup... "
-    /tmp/mkjail_${jail}.sh
-    echo -e "${Green}Ok${Color_Off}"
-
     # This need to be done when jail is stopped
     service jail stop ${jail}
     /bin/sh /tmp/configure_jail_hosts.sh ${jail}
