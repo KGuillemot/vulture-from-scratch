@@ -29,6 +29,8 @@ read a
 
 # Build jails
 cur=`pwd`
+cp ./jails/configure_jail_hosts.sh /tmp/
+cp ./jails/mkjail_*.sh /tmp/
 for jail in haproxy mongodb redis apache portal rsyslog; do
 
     # Install packages into jails

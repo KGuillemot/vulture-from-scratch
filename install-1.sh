@@ -208,7 +208,7 @@ for jail in haproxy mongodb redis apache portal rsyslog; do
     echo "nameserver ${jail}" > /zroot/${jail}/etc/resolv.conf
     echo -e "${Green}Ok${Color_Off}"
 
-    # This need to be done when jail is stopped
+    # This needs to be done when jail is stopped
     /bin/sh /tmp/configure_jail_hosts.sh ${jail}
     umount /zroot/${jail}/.jail_system
     echo -e "${Green}Ok${Color_Off}"
