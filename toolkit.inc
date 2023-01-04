@@ -26,7 +26,7 @@ make_zpool() {
         zfs create -o atime=off -o compress=on -o mountpoint=/zroot/${jail}/var ${zpool}/${jail}/var
         zfs create -o atime=off -o compress=off -o mountpoint=/zroot/${jail}/var/db ${zpool}/${jail}/var/db
         zfs create -o atime=off -o compress=off -o mountpoint=/zroot/${jail}/var/log ${zpool}/${jail}/var/log
-	echo -e "${Green}Ok{Color_Off}"
+	echo -e "${Green}Ok${Color_Off}"
     done
     
     return 0
