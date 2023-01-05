@@ -39,7 +39,6 @@ Once logged as vlt-adm, you may become root with the command `sudo su`
 
 Assuming ZFS pool name is "zroot", please execute the following commands as root :
 ```
-sudo su
 cd vulture-from-scratch
 ./install-2.sh ./config.txt zroot
 ```
