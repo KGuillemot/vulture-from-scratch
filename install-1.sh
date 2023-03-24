@@ -28,11 +28,11 @@ echo "Press CTRL+C to abort or ENTER if you want to continue..."
 read a
 
 echo -n "Fetching base system files (please wait)...: "
-/usr/bin/fetch http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/MANIFEST -o /tmp/MANIFEST > /dev/null 2> /dev/null
+/usr/bin/fetch https://hbsd.vultureproject.org/amd64/current/13-stable/BUILD-LATEST/MANIFEST -o /tmp/MANIFEST > /dev/null 2> /dev/null
 if [ -f "/tmp/base.txz" ]; then
 	echo -e "${Yellow}Skip (base.txz found in /tmp)${Color_Off}"
 else
-    /usr/bin/fetch http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/base.txz -o /tmp/base.txz > /dev/null 2> /dev/null
+    /usr/bin/fetch https://hbsd.vultureproject.org/amd64/current/13-stable/BUILD-LATEST/base.txz -o /tmp/base.txz > /dev/null 2> /dev/null
     echo -e "${Green}Ok${Color_Off}"
 fi
 echo -n "Verifying checksums (please wait)...: "
@@ -54,6 +54,11 @@ if [ "${zpool}" != "zroot" ]; then
 fi
 make_zpool ${zpool} 
 
+# Fixing home directory symlink
+rm -rf /home
+mkdir -p /usr/home
+ln -s /usr/home /home
+
 echo -n "Creating vulture directory structure... "
 # Vulture specific directories
 if [ -d /.jail_system ]; then
@@ -73,15 +78,15 @@ echo -e "${Green}Ok${Color_Off}"
 # Install packages on base system
 echo -n " [hbsd-update setup] : "
 mkdir -p /usr/share/keys/hbsd-update/trusted/
-/usr/bin/fetch http://hbsd.vultureproject.org/ca.vultureproject.org -o /usr/share/keys/hbsd-update/trusted/ca.vultureproject.org > /dev/null 2> /dev/null
-/usr/bin/fetch http://hbsd.vultureproject.org/hbsd-update-current.conf -o /etc/hbsd-update.conf > /dev/null 2> /dev/null
+/usr/bin/fetch https://hbsd.vultureproject.org/ca.vultureproject.org -o /usr/share/keys/hbsd-update/trusted/ca.vultureproject.org > /dev/null 2> /dev/null
+/usr/bin/fetch https://hbsd.vultureproject.org/hbsd-update-current.conf -o /etc/hbsd-update.conf > /dev/null 2> /dev/null
 echo -e "${Green}Ok${Color_Off}"
 
 echo -n " [pkg setup] : "
-/usr/bin/fetch http://pkg.vultureproject.org/pkg.vultureproject.org -o /usr/share/keys/pkg/trusted/pkg.vultureproject.org > /dev/null 2> /dev/null
-rm -rf /etc/pkg/* && fetch http://pkg.vultureproject.org/Vulture.conf -o /etc/pkg/ > /dev/null 2> /dev/null
+/usr/bin/fetch https://pkg.vultureproject.org/pkg.vultureproject.org -o /usr/share/keys/pkg/trusted/pkg.vultureproject.org > /dev/null 2> /dev/null
+rm -rf /etc/pkg/* && fetch https://pkg.vultureproject.org/Vulture.conf -o /etc/pkg/ > /dev/null 2> /dev/null
 env ASSUME_ALWAYS_YES=yes /usr/sbin/pkg bootstrap -y > /dev/null 2> /dev/null
-rm -rf /etc/pkg/* && /usr/bin/fetch http://pkg.vultureproject.org/Vulture.conf -o /etc/pkg/ > /dev/null 2> /dev/null
+rm -rf /etc/pkg/* && /usr/bin/fetch https://pkg.vultureproject.org/Vulture.conf -o /etc/pkg/ > /dev/null 2> /dev/null
 echo -e "${Green}Ok${Color_Off}"
 
 mkdir -p /.jail_system

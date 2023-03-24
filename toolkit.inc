@@ -17,10 +17,10 @@ make_zpool() {
     for jail in haproxy mongodb redis apache portal rsyslog; do
         echo -n " - ${jail} 	: "
         # Skip if mountpoint is already present
-	if [ -d /zroot/${jail} ]; then
-	    echo -e "${Yellow}Skip - mountpoint exists${Color_Off}"
-	    continue
-	fi
+        if [ -d /zroot/${jail} ]; then
+            echo -e "${Yellow}Skip - mountpoint exists${Color_Off}"
+            continue
+        fi
         zfs create -o atime=off -o mountpoint=/zroot/${jail} ${zpool}/${jail}
         zfs create -o atime=off -o compress=on -o mountpoint=/zroot/${jail}/usr ${zpool}/${jail}/usr
         zfs create -o atime=off -o compress=on -o mountpoint=/zroot/${jail}/var ${zpool}/${jail}/var

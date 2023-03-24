@@ -8,10 +8,10 @@ You need a working HardenedBSD installed **on top of a ZFS filesystem**.
 
 Please download one of the HardenedBSD installers from the VultureProject Mirror:
 
- - [Vulture-bootonly.iso](http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/Vulture-bootonly.iso)
- - [Vulture-disc1.iso](http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/Vulture-disc1.iso)
- - [Vulture-memstick.img](http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/Vulture-memstick.img)
- - [Vulture-mini-memstick.img](http://hbsd.vultureproject.org/13-stable/amd64/amd64/BUILD-LATEST/Vulture-mini-memstick.img)
+ - [Vulture-bootonly.iso](https://hbsd.vultureproject.org/amd64/current/13-stable/BUILD-LATEST/Vulture-bootonly.iso)
+ - [Vulture-disc1.iso](https://hbsd.vultureproject.org/amd64/current/13-stable/BUILD-LATEST/Vulture-disc1.iso)
+ - [Vulture-memstick.img](https://hbsd.vultureproject.org/amd64/current/13-stable/BUILD-LATEST/Vulture-memstick.img)
+ - [Vulture-mini-memstick.img](https://hbsd.vultureproject.org/amd64/current/13-stable/BUILD-LATEST/Vulture-mini-memstick.img)
 
 You will also need git (can be removed after) to clone the "vulture-from-scratch" installation scripts :
 ```
