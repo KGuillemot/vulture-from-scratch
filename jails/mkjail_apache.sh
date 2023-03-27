@@ -8,6 +8,7 @@ mkdir -p /zroot/apache/usr/local/sbin
 mkdir -p /zroot/apache/usr/local/lib
 /bin/cp -Rpf /home/jails.haproxy/.zfs-source/usr/local/sbin/haproxy /zroot/apache/usr/local/sbin/haproxy
 /bin/cp -Rpf /home/jails.haproxy/.zfs-source/usr/local/lib/libslz.* /zroot/apache/usr/local/lib/
+/bin/cp -Rpf /home/jails.haproxy/.zfs-source/usr/local/share/haproxy /zroot/apache/usr/local/share/
 
 cp -rf /home/jails.apache/.zfs-source/usr/local/etc/* "${TARGET}/usr/local/etc/"
 if [ ! -f ${TARGET}/usr/local/etc/apache24/extra/timeouts.conf ] ; then
