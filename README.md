@@ -45,4 +45,5 @@ cd vulture-from-scratch
 
 After the script completion, ** you need to reboot the system **
 
-At this point, Vulture shoiuld be fully installed and ready for bootstrap [See online Documentation](https://www.vultureproject.org/doc/deploy).
+At this point, Vulture should be fully installed and ready for bootstrap [See online Documentation](https://www.vultureproject.org/doc/overview/deploy).
+
