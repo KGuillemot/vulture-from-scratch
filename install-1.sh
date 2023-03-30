@@ -91,7 +91,10 @@ echo -e "${Green}Ok${Color_Off}"
 
 mkdir -p /.jail_system
 echo -n "Decompressing base.txz into jail_system... "
-tar xf /tmp/base.txz -C /.jail_system/
+#https://github.com/freebsd/freebsd-src/blob/main/usr.sbin/bsdinstall/scripts/script
+#tar -xf "$BSDINSTALL_DISTDIR/$set" -C $BSDINSTALL_CHROOT --exclude boot/efi
+tar -xf "/tmp/base.txz" -C /.jail_system/ --exclude boot/efi
+mkdir -p /.jail_system/boot/efi
 echo -e "${Green}Ok${Color_Off}"
 
 echo "System configuration: "
